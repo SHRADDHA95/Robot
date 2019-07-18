@@ -11,7 +11,7 @@ import com.robotservice.constants.LightColor;
 import com.robotservice.constants.RobotConstants;
 import com.robotservice.service.RobotService;
 @Service
-public class PrototypeRobotService implements RobotService {
+public class RobotServiceImpl implements RobotService {
 	@Autowired
 	private RobotBean robot;
 
