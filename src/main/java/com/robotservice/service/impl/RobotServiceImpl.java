@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.robotservice.beans.RobotBean;
 import com.robotservice.constants.LightColor;
-import com.robotservice.constants.RobotConstants;
+import com.robotservice.constants.Constants;
 import com.robotservice.service.RobotService;
 @Service
 public class RobotServiceImpl implements RobotService {
@@ -19,7 +19,7 @@ public class RobotServiceImpl implements RobotService {
 	public void walkingWithWeight(Double distance, Double weight) {
 		
 		if(isAbleToWalk(distance) && isAbleToCarryWeight(weight)) {		
-			Double requiredCharging=distance*100/RobotConstants.MAX_DISTANCE+2*weight;		
+			Double requiredCharging=distance*100/Constants.MAX_DISTANCE+2*weight;		
 			if(isChargingAvailable(requiredCharging)) {
 				System.out.println("Robot has walked "+distance+" with weight "+weight);
 				System.out.println("Used Charging "+requiredCharging);
@@ -41,7 +41,7 @@ public class RobotServiceImpl implements RobotService {
 
 	private boolean isAbleToCarryWeight(Double weight) {
 		Predicate<Double> isValid=val->{
-			if(val>RobotConstants.MAX_CAPICITY) {	
+			if(val>Constants.MAX_CAPICITY) {	
 				System.out.println("Overweight");
 				robot.setChestIndicator(LightColor.RED);
 				return false;
@@ -54,7 +54,7 @@ public class RobotServiceImpl implements RobotService {
 
 	private boolean isAbleToWalk(Double distance) {
 		Predicate<Double> isValid=val->{
-			if(val>RobotConstants.MAX_DISTANCE) {
+			if(val>Constants.MAX_DISTANCE) {
 				return false;
 				}
 				return true;
@@ -70,7 +70,7 @@ public class RobotServiceImpl implements RobotService {
 			}else {
 				Double availableCharing=robot.getAvailableCharging()-requiredCharging;
 				robot.setAvailableCharging(availableCharing);
-				if(availableCharing<RobotConstants.MIN_CHARGING_ALERT) {
+				if(availableCharing<Constants.MIN_CHARGING_ALERT) {
 					robot.setHeadIndicator(LightColor.RED);
 					System.out.println("Low Battery");					
 				}
