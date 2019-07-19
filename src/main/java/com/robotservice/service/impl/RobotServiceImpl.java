@@ -1,19 +1,25 @@
 package com.robotservice.service.impl;
 
-import java.text.DecimalFormat;
 import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import com.robotservice.beans.RobotBean;
-import com.robotservice.constants.LightColor;
 import com.robotservice.constants.Constants;
+import com.robotservice.constants.LightColor;
 import com.robotservice.service.RobotService;
 @Service
 public class RobotServiceImpl implements RobotService {
+	
 	@Autowired
 	private RobotBean robot;
+	
+	@Autowired
+	RestTemplate restTemplate;
 
 	@Override
 	public void walkingWithWeight(Double distance, Double weight) {
@@ -30,19 +36,35 @@ public class RobotServiceImpl implements RobotService {
 	}
 
 
-	@Override
+/*	@Override
 	public void displayPrice(int barcode) {
 		if(barcode>0) {
 			System.out.printf("Price:"+Double.parseDouble(new DecimalFormat("7.2").format(Math.random()*100))+"\n");
 		}else {
 			System.out.println("Scan Failure");
 		}
-	}
+	}*/
 
+	@Override
+	public void displayPrice(String barcode) {
+		try {
+			String url="http://localhost:8080/barCodeScanner/"+barcode;
+			
+			Double price=restTemplate.exchange(url, HttpMethod.GET,null,Double.class).getBody();
+			if(price<=0.0) {
+				System.out.println("Scan Failure");
+			}else {
+				System.out.println("Price:"+price);
+			}
+		}catch(RestClientException e) {		
+			e.printStackTrace();
+		}
+	}
+	
 	private boolean isAbleToCarryWeight(Double weight) {
 		Predicate<Double> isValid=val->{
 			if(val>Constants.MAX_CAPICITY) {	
-				System.out.println("Overweight");
+				System.out.println("CHEST LED - Overweight");
 				robot.setChestIndicator(LightColor.RED);
 				return false;
 				}
@@ -54,7 +76,8 @@ public class RobotServiceImpl implements RobotService {
 
 	private boolean isAbleToWalk(Double distance) {
 		Predicate<Double> isValid=val->{
-			if(val>Constants.MAX_DISTANCE) {
+			if(val>Constants.MAX_DISTANCE || val<=0.0) {
+				System.out.println("Enter weight greater than 0");
 				return false;
 				}
 				return true;
@@ -72,7 +95,7 @@ public class RobotServiceImpl implements RobotService {
 				robot.setAvailableCharging(availableCharing);
 				if(availableCharing<Constants.MIN_CHARGING_ALERT) {
 					robot.setHeadIndicator(LightColor.RED);
-					System.out.println("Low Battery");					
+					System.out.println("HEAD INDICATOR [RED] - Low Battery");					
 				}
 				return true;
 			}
