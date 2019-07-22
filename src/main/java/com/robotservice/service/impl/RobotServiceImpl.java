@@ -22,8 +22,8 @@ public class RobotServiceImpl implements RobotService {
 	RestTemplate restTemplate;
 
 	@Override
-	public void walkingWithWeight(Double distance, Double weight) {
-		
+	public Double walkingWithWeight(Double distance, Double weight) {
+		Double availableCharging=0.0;
 		if(isAbleToWalk(distance) && isAbleToCarryWeight(weight)) {		
 			Double requiredCharging=distance*100/Constants.MAX_DISTANCE+2*weight;		
 			if(isChargingAvailable(requiredCharging)) {
@@ -31,8 +31,10 @@ public class RobotServiceImpl implements RobotService {
 				System.out.println("Used Charging "+requiredCharging);
 				System.out.println("Available Charging "+robot.getAvailableCharging());
 				//System.out.println("Chest Indicator color "+robot.getChestIndicator());
+				availableCharging=robot.getAvailableCharging();
 			}
 		}
+		return availableCharging;
 	}
 
 
@@ -46,11 +48,12 @@ public class RobotServiceImpl implements RobotService {
 	}*/
 
 	@Override
-	public void displayPrice(String barcode) {
+	public Double displayPrice(String barcode) {
+		Double price=0.0;
 		try {
 			String url="http://localhost:8080/barCodeScanner/"+barcode;
 			
-			Double price=restTemplate.exchange(url, HttpMethod.GET,null,Double.class).getBody();
+			price=restTemplate.exchange(url, HttpMethod.GET,null,Double.class).getBody();
 			if(price<=0.0) {
 				System.out.println("Scan Failure");
 			}else {
@@ -59,6 +62,7 @@ public class RobotServiceImpl implements RobotService {
 		}catch(RestClientException e) {		
 			e.printStackTrace();
 		}
+		return price;
 	}
 	
 	private boolean isAbleToCarryWeight(Double weight) {
@@ -77,7 +81,7 @@ public class RobotServiceImpl implements RobotService {
 	private boolean isAbleToWalk(Double distance) {
 		Predicate<Double> isValid=val->{
 			if(val>Constants.MAX_DISTANCE || val<=0.0) {
-				System.out.println("Enter weight greater than 0");
+				System.out.println("Enter distance greater than 0");
 				return false;
 				}
 				return true;
