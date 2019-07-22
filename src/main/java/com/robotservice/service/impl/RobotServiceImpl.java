@@ -81,7 +81,7 @@ public class RobotServiceImpl implements RobotService {
 	private boolean isAbleToWalk(Double distance) {
 		Predicate<Double> isValid=val->{
 			if(val>Constants.MAX_DISTANCE || val<=0.0) {
-				System.out.println("Enter distance greater than 0");
+				System.out.println("Enter distance greater than 0 and less than 5");
 				return false;
 				}
 				return true;
@@ -92,7 +92,7 @@ public class RobotServiceImpl implements RobotService {
 	private boolean isChargingAvailable(Double requiredCharging) {
 		Predicate<Double> isValid=val->{
 			if(robot.getAvailableCharging()<requiredCharging) {
-				System.out.println("Remaining charging is less than required charging, so this task can not be processed.");
+				System.out.println("This task can not be completed, as required charging is less than available charging");
 				return false;
 			}else {
 				Double availableCharing=robot.getAvailableCharging()-requiredCharging;

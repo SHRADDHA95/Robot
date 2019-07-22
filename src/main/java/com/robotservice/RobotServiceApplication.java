@@ -19,7 +19,7 @@ public class RobotServiceApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {		
-		//robotService.walkingWithWeight(5.5, 0.0);
+		robotService.walkingWithWeight(5.0, 5.0);
 		//robotService.walkingWithWeight(2.0, 3.0);
 		//robotService.walkingWithWeight(0.0, 12.0);
 		//Asuming QR code return integer value as 0 or 1
